@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Home</title>
+</head>
+<body>
+Home!!!
+{{ files }}
+<h3>Files :</h3>
+<ul>
+{%for file in files %}
+<li><a href="/file/{{file}}">{{file}}</a></li>
+{% endfor %}
+
+</ul>
+
+</body>
+</html>

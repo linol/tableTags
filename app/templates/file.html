@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>DataTable + Tags + ID readonly</title>
+
+
+  <link href="https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.css" rel="stylesheet" type="text/css">
+  <link href="https://cdn.datatables.net/buttons/3.2.0/css/buttons.dataTables.css" rel="stylesheet" type="text/css">
+
+  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+  <script src="https://cdn.datatables.net/2.2.1/js/dataTables.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.2.0/js/dataTables.buttons.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.dataTables.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.print.min.js"></script>
+
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
+  <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <style>
+    .tagify { width: 100%; }
+    .dt-center { text-align: center; }
+    .updatable { width: 100%; }
+  </style>
+</head>
+<body>
+<a href="/">Home</a>
+<button id="addRow">➕ Ajouter une ligne</button>
+<input type="file" id="importCsv" accept=".csv">
+
+<button id="save">💾 Save</button>
+<br/>
+<a href="{{ url_for('file', filename=filename) }}">Full</a>
+<br/>
+<span>allTags : </span>
+{% for tag in allTags %}
+ - <a href="{{ url_for('file', filename=filename, q=tag) }}">{{tag}}</a>
+{% endfor %}
+<br/>
+<span>related tags : </span>
+{% for tag in relatedTags %}
+ - <a href="{{ url_for('file', filename=filename, q=tag) }}">{{tag}}</a>
+{% endfor %}
+
+
+<table id="table" class="display">
+  <thead>
+    <tr>
+      <th>Thumb</th>
+      <th>Tags</th>
+      <th>Texte</th>
+      <th>Link</th>
+      <th>UpdatedAt</th>
+      <th>CreatedAt</th>
+      <th>Thumb</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+    <tr>
+      <td>
+
+        <a href="{{ row['Link'] }}" target="_blank">
+          link
+          <span class="index">{{ row["ID"] }}</span>
+          <img src="{{ row['Thumb'] }}" height="100"/>
+        </a>
+      </td>
+      <td>{{ row["Tags"] }}</td>
+      <td>{{ row["Texte"] }}</td>
+      <td>{{ row["Link"] }}</td>
+      <td>{{ row["UpdatedAt"] }}</td>
+      <td>{{ row["CreatedAt"] }}</td>
+      <td>{{ row["Thumb"] }}</td>
+      <td><button class="delete">🗑</button></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+  let tagsWhitelist = ["{{autocompTags|safe}}"];
+  const tagifyInstances = [];
+
+  function createRowData(id = "", tags = "", text = "", link = "", updatedAt = "", createdAt = "",thumb = "") {
+    return {
+      id: '<a href="'+link+'" target="_blank">'+id+'</a>',
+      tags: tags,
+      text: text,
+      link: link,
+      updatedAt : updatedAt,
+      createdAt : createdAt,
+      thumb : thumb,
+      action: '<button class="delete">🗑</button>'
+    };
+  }
+
+  const table = $('#table').DataTable({
+    dom: 'Bfrtip',
+    buttons: [
+      {
+        extend: 'csvHtml5',
+        text: '⬇ Export CSV',
+        filename: '{{filename}}',
+        action: function (e, dt, node, config) {
+          const rows = [["ID", "Tags", "Texte", "Link","UpdatedAt","CreatedAt","Thumb"]];
+
+          dt.rows({ search: 'applied' }).every(function () {
+            const tr = $(this.node());
+            const id = tr.find('td:eq(0) .index').text();
+            const text = tr.find('td:eq(2) input').val();
+            const link = tr.find('td:eq(3) input').val();
+            const updatedAt = tr.find('td:eq(4)').text();
+            const createdAt = tr.find('td:eq(5)').text();
+            const thumb = tr.find('td:eq(6) input').val();
+
+
+            const tags = JSON.parse(tr.find('td:eq(1) input').val()).map(item => item.value).join(',');
+            
+            rows.push([id,tags,text,link,updatedAt,createdAt,thumb]);
+          });
+
+          const csv = Papa.unparse(rows);
+          const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = config.filename + ".csv";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      }
+    ],
+    columns: [
+      { data: 'id' },
+      { data: 'tags' },
+      { data: 'text' },
+      { data: 'link' },
+      { data: 'updatedAt' },
+      { data: 'createdAt' },
+      { data: 'thumb' },
+      { data: 'action', className: 'dt-center', orderable: false }
+    ],
+    createdRow: function(row, data, dataIndex){
+      // ID readonly
+      $('td', row).eq(0).html(`${data.id}`);
+      $('td', row).eq(1).html(`<input type="text" class="tags updatable" value="${data.tags}">`);
+      $('td', row).eq(2).html(`<input type="text" class="text updatable" value="${data.text}">`);
+      $('td', row).eq(3).html(`<input type="text" class="link updatable" value="${data.link}">`);
+      $('td', row).eq(4).html(`<span class="updatedAt">${data.updatedAt}</span>`);
+      $('td', row).eq(5).html(`${data.createdAt}`);
+      $('td', row).eq(6).html(`<input type="text" class="thumb updatable" value="${data.thumb}">`);
+      initTagify($(row).find('.tags')[0]);
+    }
+  });
+
+  function initTagify(input) {
+    const tagify = new Tagify(input, {
+      whitelist: tagsWhitelist,
+      dropdown: { enabled: 1 },
+      enforceWhitelist: false
+    });
+
+    tagify.on("add", e => {
+      const value = e.detail.data.value;
+      if (!tagsWhitelist.includes(value)) {
+        tagsWhitelist.push(value);
+        tagifyInstances.forEach(t => t.settings.whitelist = tagsWhitelist);
+      }
+    });
+
+    tagifyInstances.push(tagify);
+  }
+
+  function nowUnix() {
+    return Math.floor(Date.now() / 1000);
+  }
+  // const ts = nowUnix();
+
+  function addRow() {
+    table.row.add(createRowData("", "", "", "",nowUnix(),nowUnix(), "")).draw(false);
+  }
+
+  $('#addRow').on('click', addRow);
+
+  $('#table tbody').on('click', '.delete', function () {
+    table.row($(this).parents('tr')).remove().draw();
+  });
+
+  $('#table tbody').on('change', '.updatable', function () {
+    var $row = $(this).closest('tr');
+    var $dateCell = $row.find('td:eq(4)');
+    var now = new Date().toISOString().split('T')[0];
+    $dateCell.text(nowUnix());
+  });
+
+  // Import CSV
+  $('#importCsv').on('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: function(results) {
+        table.clear();
+
+        results.data.forEach(row => {
+          table.row.add(createRowData(row["ID"] || "", row["Tags"] || "", row["Texte"] || "", row["Link"] || "", row["UpdatedAt"] || "", row["CreatedAt"] || "", row["Thumb"] || "" ));
+        });
+
+        table.draw();
+      }
+    });
+  });
+    function nowUnix() {
+    return Math.floor(Date.now() / 1000);
+  }
+
+  // SAVE
+  $('#save').on('click', function () {
+    const rows = [];
+    
+    // Parcourt TOUTES les lignes (toutes les pages)
+    table.rows().every(function () {
+
+      const rowNode = this.node(); // récupère le <tr> complet
+      // "Tags": JSON.parse($(rowNode).find('td:eq(1) input').val()).map(item => item.value).join(','),
+      // const jsonString = $(rowNode).find('td:eq(1) input').val();
+      // let tags = "";
+
+      // if (jsonString) {
+      //   try {
+      //     const a= JSON.parse(jsonString);
+      //     tags = array.map(item => item.value).join(',');
+      //   } catch (error) {
+      //     console.error("JSON invalide :", error);
+      //   }
+      //}
+      let tags = '';
+
+      if ($(rowNode).find('td:eq(1) input').val()) {
+        try {
+          const array = JSON.parse($(rowNode).find('td:eq(1) input').val());
+          tags = array.map(item => item.value).join(',');
+        } catch (error) {
+          console.error("JSON invalide :", error);
+        }
+      }
+      //tags = JSON.parse($(rowNode).find('td:eq(1) input').val()).map(item => item.value).join(','),
+
+      rows.push({
+        "ID": $(rowNode).find('td:eq(0) .index').text(),
+        "Tags": tags,
+        "Texte": $(rowNode).find('td:eq(2) input').val(),
+        "Link": $(rowNode).find('td:eq(3) input').val(),
+        "UpdatedAt": $(rowNode).find('td:eq(4)').text(),
+        "CreatedAt": $(rowNode).find('td:eq(5)').text(),
+        "Thumb": $(rowNode).find('td:eq(6) input').val(),
+      });
+
+    });
+
+    fetch("/save/{{filename}}", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(rows)
+    })
+    .then(() => alert("Sauvegardé ✅"));
+  });
+</script>
+
+</body>
+</html>

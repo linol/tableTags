@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 800px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "id": "jenkins", "label": "jenkins", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "trigger", "label": "trigger", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "mailnotifications", "label": "mailnotifications", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "pipeline", "label": "pipeline", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "kubernetes", "label": "kubernetes", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "plugins", "label": "plugins", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "sonarqube", "label": "sonarqube", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "docker", "label": "docker", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "pipelinestageviewplugins", "label": "pipelinestageviewplugins", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "mavenplugins", "label": "mavenplugins", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "jdkplugins", "label": "jdkplugins", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "miseenplace", "label": "miseenplace", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "kubectl", "label": "kubectl", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "trivy", "label": "trivy", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "aws", "label": "aws", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "grafana", "label": "grafana", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "prometheus", "label": "prometheus", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "blackbox", "label": "blackbox", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "kubeaudit", "label": "kubeaudit", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "deploiement", "label": "deploiement", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "nginx", "label": "nginx", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "clustering", "label": "clustering", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "k8s", "label": "k8s", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "mobaxterm", "label": "mobaxterm", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ssh", "label": "ssh", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "terminal", "label": "terminal", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ec2", "label": "ec2", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "github", "label": "github", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "private", "label": "private", "shape": "dot", "size": 10}]);
+                  edges = new vis.DataSet([{"from": "jenkins", "to": "trigger", "width": 1}, {"from": "jenkins", "to": "mailnotifications", "width": 1}, {"from": "jenkins", "to": "pipeline", "width": 1}, {"from": "jenkins", "to": "kubernetes", "width": 2}, {"from": "jenkins", "to": "plugins", "width": 6}, {"from": "jenkins", "to": "sonarqube", "width": 1}, {"from": "jenkins", "to": "docker", "width": 2}, {"from": "jenkins", "to": "pipelinestageviewplugins", "width": 1}, {"from": "jenkins", "to": "mavenplugins", "width": 1}, {"from": "jenkins", "to": "jdkplugins", "width": 1}, {"from": "jenkins", "to": "miseenplace", "width": 2}, {"from": "jenkins", "to": "kubectl", "width": 1}, {"from": "jenkins", "to": "trivy", "width": 1}, {"from": "jenkins", "to": "aws", "width": 1}, {"from": "grafana", "to": "prometheus", "width": 1}, {"from": "grafana", "to": "miseenplace", "width": 1}, {"from": "prometheus", "to": "blackbox", "width": 1}, {"from": "prometheus", "to": "miseenplace", "width": 1}, {"from": "kubernetes", "to": "plugins", "width": 1}, {"from": "kubernetes", "to": "kubectl", "width": 1}, {"from": "kubernetes", "to": "docker", "width": 1}, {"from": "kubernetes", "to": "miseenplace", "width": 3}, {"from": "kubernetes", "to": "sonarqube", "width": 1}, {"from": "kubernetes", "to": "kubeaudit", "width": 1}, {"from": "kubernetes", "to": "trivy", "width": 1}, {"from": "kubernetes", "to": "deploiement", "width": 1}, {"from": "kubernetes", "to": "nginx", "width": 1}, {"from": "kubernetes", "to": "clustering", "width": 1}, {"from": "kubernetes", "to": "k8s", "width": 2}, {"from": "plugins", "to": "sonarqube", "width": 1}, {"from": "plugins", "to": "docker", "width": 1}, {"from": "plugins", "to": "pipelinestageviewplugins", "width": 1}, {"from": "plugins", "to": "mavenplugins", "width": 1}, {"from": "plugins", "to": "jdkplugins", "width": 1}, {"from": "plugins", "to": "miseenplace", "width": 1}, {"from": "sonarqube", "to": "docker", "width": 1}, {"from": "sonarqube", "to": "miseenplace", "width": 1}, {"from": "docker", "to": "aws", "width": 1}, {"from": "docker", "to": "miseenplace", "width": 2}, {"from": "jdkplugins", "to": "miseenplace", "width": 1}, {"from": "miseenplace", "to": "aws", "width": 2}, {"from": "miseenplace", "to": "clustering", "width": 1}, {"from": "miseenplace", "to": "k8s", "width": 2}, {"from": "miseenplace", "to": "mobaxterm", "width": 1}, {"from": "miseenplace", "to": "ssh", "width": 1}, {"from": "miseenplace", "to": "terminal", "width": 1}, {"from": "miseenplace", "to": "ec2", "width": 1}, {"from": "github", "to": "private", "width": 1}, {"from": "trivy", "to": "kubeaudit", "width": 1}, {"from": "aws", "to": "ec2", "width": 1}, {"from": "deploiement", "to": "nginx", "width": 1}, {"from": "clustering", "to": "k8s", "width": 1}, {"from": "mobaxterm", "to": "ssh", "width": 1}, {"from": "mobaxterm", "to": "terminal", "width": 1}, {"from": "ssh", "to": "terminal", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

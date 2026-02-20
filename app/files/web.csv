@@ -1,0 +1,12 @@
+ID,Tags,Texte,Link,UpdatedAt,CreatedAt,Thumb
+1,"flask,urls",use url variable,http://192.168.1.29/index.php/apps/deck/board/2/card/52,1771168130,1771079356,
+1,"flask,database,SQLAchemy",utilisation d'une base de données,http://192.168.1.29:5050/static/files/librairie/livres/0q2JQE0XgxE.pdf#page=83,1771173248,1771078702,http://192.168.1.29:5050/static/thumbs/librairie/livres/0q2JQE0XgxE.jpg
+1,"flask,route",redirection,http://192.168.1.29:5050/static/files/librairie/livres/0q2JQE0XgxE.pdf#page=74,1771173250,1771077547,http://192.168.1.29:5050/static/thumbs/librairie/livres/0q2JQE0XgxE.jpg
+1,"flask,forms",formulaire,http://192.168.1.29:5050/static/files/librairie/livres/0q2JQE0XgxE.pdf#page=65,1771173254,1771077468,http://192.168.1.29:5050/static/thumbs/librairie/livres/0q2JQE0XgxE.jpg
+1,"flask,users,forms",login form,http://192.168.1.29:5050/static/files/librairie/livres/0q2JQE0XgxE.pdf#page=107,1771173256,1771077403,http://192.168.1.29:5050/static/thumbs/librairie/livres/0q2JQE0XgxE.jpg
+1,"flask,users,mail",envoyer un mail de confirmation,http://192.168.1.29:5050/static/files/librairie/livres/0q2JQE0XgxE.pdf#page=118,1771173258,1771077291,http://192.168.1.29:5050/static/thumbs/librairie/livres/0q2JQE0XgxE.jpg
+1,"flask,deploiement,heroku",déployer son application flask sur heroku,http://192.168.1.29:5050/static/files/librairie/livres/0q2JQE0XgxE.pdf#page=263,1771173264,1771076324,http://192.168.1.29:5050/static/thumbs/librairie/livres/0q2JQE0XgxE.jpg
+1,"flask,tests,coverage",test de couverture de code,http://192.168.1.29:5050/static/files/librairie/livres/0q2JQE0XgxE.pdf#page=244,1771173270,1771076161,http://192.168.1.29:5050/static/thumbs/librairie/livres/0q2JQE0XgxE.jpg
+1,"flask,unittest,tests",réaliser des tests unitaires,http://192.168.1.29:5050/static/files/librairie/livres/0q2JQE0XgxE.pdf#page=116,1771173278,1771074546,http://192.168.1.29:5050/static/thumbs/librairie/livres/0q2JQE0XgxE.jpg
+1,"flask,users",Gestion des utilisateurs,http://192.168.1.29:5050/static/files/librairie/livres/0q2JQE0XgxE.pdf#page=123,1771173281,1771074766,http://192.168.1.29:5050/static/thumbs/librairie/livres/0q2JQE0XgxE.jpg
+1,"flask,mail",envoyer un e-mail,http://192.168.1.29:5050/static/files/librairie/livres/0q2JQE0XgxE.pdf#page=103,1771173286,1771074440,http://192.168.1.29:5050/static/thumbs/librairie/livres/0q2JQE0XgxE.jpg
